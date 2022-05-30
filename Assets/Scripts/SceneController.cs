@@ -63,8 +63,41 @@ public class SceneController : MonoBehaviour
         Character.CharacterDeath += CharacterDeath;
     }
 
-    private void CreateCharacter(int i, CharacterDir dir)
+    void Update()
     {
+        switch (State)
+        {
+            case GameState.SelectTarget:
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                RaycastHit hit;
+                if (Physics.Raycast(ray, out hit))
+                {
+                    if (hit.collider)
+                    {
+                        Character select = hit.collider.GetComponent<Character>();
+                        FocusEnemy(select);
+
+                        if (Input.GetMouseButton(0))
+                        {
+                            currentCharacter.Attack(targetCharacter);
+                            State = GameState.WaitAttack;
+                        }
+                    }
+                }
+                else if (targetCharacter)
+                    targetCharacter.SetSelect(false);
+
+                break;
+            case GameState.WaitAttack:
+                if (currentCharacter.animator.IsIdle && (targetCharacter.IsDeath || targetCharacter.animator.IsIdle))
+                    AttackCompleted();
+                break;
+        }
+    }
+
+    void CreateCharacter(int i, CharacterDir dir)
+    {
+        //Здесь должен использоваться пул менеджер
         Character character =
             Instantiate(Resources.Load<GameObject>("Prefabs/Character")).GetComponent<Character>();
         int type = Random.Range(0, 2);
@@ -89,12 +122,6 @@ public class SceneController : MonoBehaviour
     void StartRound()
     {
         List<Character> allCharacters = new List<Character>();
-        if (charactersLeft.Count == 0 || charactersRight.Count == 0)
-        {
-            SceneManager.LoadScene("Main");
-            return;
-        }
-
         for (int i = 0; i < charactersLeft.Count; i++)
             allCharacters.Add(charactersLeft[i]);
         for (int i = 0; i < charactersRight.Count; i++)
@@ -112,6 +139,12 @@ public class SceneController : MonoBehaviour
 
     void SetNextCharacter()
     {
+        if (charactersLeft.Count == 0 || charactersRight.Count == 0)
+        {
+            SceneManager.LoadScene("Main");
+            return;
+        }
+
         if (currentCharacter)
         {
             orderMoves.Remove(currentCharacter);
@@ -128,55 +161,23 @@ public class SceneController : MonoBehaviour
         currentCharacter.SetSelect(true);
     }
 
-    void Update()
-    {
-        switch (State)
-        {
-            case GameState.WaitAction:
-                break;
-            case GameState.SelectTarget:
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                RaycastHit hit;
-                if (Physics.Raycast(ray, out hit))
-                {
-                    if (hit.collider)
-                    {
-                        Character select = hit.collider.GetComponent<Character>();
-                        if (select && select.parameters.dir != currentCharacter.parameters.dir)
-                        {
-                            if (targetCharacter != null && targetCharacter != select)
-                                targetCharacter.SetSelect(false);
-                            targetCharacter = select;
-                            targetCharacter.SetSelect(true);
-                        }
-
-                        if (Input.GetMouseButton(0))
-                        {
-                            currentCharacter.Attack(targetCharacter);
-                            State = GameState.WaitAttack;
-                        }
-                    }
-                }
-                else if (targetCharacter)
-                    targetCharacter.SetSelect(false);
-
-                break;
-            case GameState.WaitAttack:
-                if (currentCharacter.animator.IsIdle && (targetCharacter.IsDeath || targetCharacter.animator.IsIdle))
-                {
-                    AttackCompleted();
-                }
-
-                break;
-        }
-    }
-
     void AttackCompleted()
     {
         if (!targetCharacter.IsDeath)
             targetCharacter.SetSelect(false);
         State = GameState.WaitAction;
         SetNextCharacter();
+    }
+
+    void FocusEnemy(Character select)
+    {
+        if (select && select.parameters.dir != currentCharacter.parameters.dir)
+        {
+            if (targetCharacter != null && targetCharacter != select)
+                targetCharacter.SetSelect(false);
+            targetCharacter = select;
+            targetCharacter.SetSelect(true);
+        }
     }
 
     void CharacterDeath(Character character)
@@ -193,6 +194,8 @@ public class SceneController : MonoBehaviour
         }
     }
 
+    #region UIEvents
+
     public void Attack()
     {
         State = GameState.SelectTarget;
@@ -203,4 +206,6 @@ public class SceneController : MonoBehaviour
         State = GameState.WaitAction;
         SetNextCharacter();
     }
+
+    #endregion
 }

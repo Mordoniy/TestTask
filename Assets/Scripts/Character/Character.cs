@@ -40,14 +40,14 @@ public class Character : MonoBehaviour
             Death();
     }
 
-    public void Hit()
-    {
-        currentAttack?.Invoke();
-    }
-
     public void SetSelect(bool isSelect)
     {
         animator.SetSelect(isSelect);
+    }
+
+    public void Hit()
+    {
+        currentAttack?.Invoke();
     }
 
     void Death()
