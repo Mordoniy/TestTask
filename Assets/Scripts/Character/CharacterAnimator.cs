@@ -1,5 +1,5 @@
+using System;
 using System.Collections;
-using System.Collections.Generic;
 using DG.Tweening;
 using Spine.Unity;
 using UnityEngine;
@@ -7,18 +7,43 @@ using UnityEngine;
 public class CharacterAnimator : MonoBehaviour
 {
     private SkeletonMecanim skeleton;
+    private new MeshRenderer renderer;
     private Animator animator;
     private string skin;
 
     private Tween currentTweenColor;
 
-    void Start()
+    public void Init(CharacterType type, CharacterDir dir, int numb)
     {
         skeleton = GetComponent<SkeletonMecanim>();
         animator = GetComponent<Animator>();
+        renderer = GetComponent<MeshRenderer>();
 
         skeleton.skeleton.SetColor(Color.gray);
-        skin = skeleton.skeleton.skin.name;
+        renderer.sortingOrder = -numb;
+
+        switch (type)
+        {
+            case CharacterType.Common:
+                skin = "base";
+                break;
+            case CharacterType.Elite:
+                skin = "elite";
+                break;
+        }
+
+        switch (dir)
+        {
+            case CharacterDir.Left:
+                transform.localPosition = new Vector3(-Settings.Instance.offsetCharacter * numb, 0, 0);
+                break;
+            case CharacterDir.Right:
+                skeleton.skeleton.scaleX = -1;
+                transform.localPosition = new Vector3(Settings.Instance.offsetCharacter * numb, 0, 0);
+                break;
+        }
+
+        SetSkin(skin);
     }
 
     public void Attack(CharacterType type)
@@ -44,8 +69,20 @@ public class CharacterAnimator : MonoBehaviour
     public void SetSelect(bool isSelect)
     {
         if (isSelect)
+        {
             currentTweenColor = skeleton.DOColor(Color.white, .3f);
-        else currentTweenColor = skeleton.DOColor(Color.grey, .3f);
+            renderer.sortingLayerName = "SelectCharacters";
+        }
+        else
+        {
+            currentTweenColor = skeleton.DOColor(Color.grey, .3f);
+            renderer.sortingLayerName = "Characters";
+        }
+    }
+
+    public void Death()
+    {
+        //Заглушка, анимация отсутствует
     }
 
     void SetSkin(string name)
