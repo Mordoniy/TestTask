@@ -3,10 +3,17 @@ using UnityEngine;
 
 public class Character : MonoBehaviour
 {
+    public static event System.Action<Character> CharacterDeath;
+
     public CharacterAnimator animator;
     public CharacterParameters parameters;
 
     private System.Action currentAttack;
+
+    public bool IsDeath
+    {
+        get => parameters.currentLife == 0;
+    }
 
     public void Init(CharacterParameters parameters, int numb)
     {
@@ -38,9 +45,15 @@ public class Character : MonoBehaviour
         currentAttack?.Invoke();
     }
 
+    public void SetSelect(bool isSelect)
+    {
+        animator.SetSelect(isSelect);
+    }
+
     void Death()
     {
         animator.Death();
         Destroy(gameObject, 1); //Здесь должен использоваться пул менеджер
+        CharacterDeath?.Invoke(this);
     }
 }

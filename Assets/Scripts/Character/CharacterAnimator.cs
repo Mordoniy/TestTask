@@ -13,6 +13,8 @@ public class CharacterAnimator : MonoBehaviour
 
     private Tween currentTweenColor;
 
+    public bool IsIdle => animator.GetCurrentAnimatorStateInfo(0).IsName("Idle");
+
     public void Init(CharacterType type, CharacterDir dir, int numb)
     {
         skeleton = GetComponent<SkeletonMecanim>();
@@ -68,6 +70,7 @@ public class CharacterAnimator : MonoBehaviour
 
     public void SetSelect(bool isSelect)
     {
+        currentTweenColor?.Kill();
         if (isSelect)
         {
             currentTweenColor = skeleton.DOColor(Color.white, .3f);
@@ -95,9 +98,11 @@ public class CharacterAnimator : MonoBehaviour
     {
         while (true)
         {
-            yield return null; //Пропускаем один кадр для применения изменений
+            yield return null; //Пропускаем пару кадров для применения изменений
+            yield return null;
             if (!animator.GetCurrentAnimatorStateInfo(0).IsName(name))
             {
+                // Debug.Break();
                 action?.Invoke();
                 yield break;
             }

@@ -24,7 +24,7 @@ MonoBehaviour:
     damage: 30
   eliteCharacter:
     type: 1
-    life: 10
+    life: 100
     attack: 9
     defence: 5
     damage: 20
