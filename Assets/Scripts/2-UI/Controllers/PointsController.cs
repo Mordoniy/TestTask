@@ -10,23 +10,17 @@ public class PointsController : MonoBehaviour
     [SerializeField] private AnimationCurve easeOutBack;
     [SerializeField] private AnimationCurve easeOutQuad;
 
-    private UISettings settings;
-
     private Coroutine currentEffect;
-
-    private void Start()
-    {
-        settings = Resources.Load<UISettings>("UISettings");
-    }
+    private int currentValue;
 
     public void Init()
     {
-        text.text = Functions.GetPoints().ToString();
+        currentValue = Functions.GetPoints();
+        text.text = currentValue.ToString();
     }
 
     public void AddPoints(int value)
     {
-        int currentValue = int.Parse(text.text);
         if (currentEffect != null)
             StopCoroutine(currentEffect);
         currentEffect = StartCoroutine(AddPointEffect(currentValue, Functions.GetPoints()));
@@ -35,20 +29,22 @@ public class PointsController : MonoBehaviour
     IEnumerator AddPointEffect(float start, float target)
     {
         float time = 0;
-        float maxTime = settings.timeAnimationAddPoint;
+        float maxTime = UISettings.Instance.timeAnimationAddPoint;
 
         while (time < maxTime)
         {
             time += Time.deltaTime;
             star.eulerAngles = new Vector3(0, 0, 360 * easeOutQuad.Evaluate(time / maxTime));
             text.rectTransform.localScale = Vector3.one * easeOutBack.Evaluate(time / maxTime);
-            text.text = Mathf.RoundToInt(start + (target - start) * easeOutQuad.Evaluate(time / maxTime)).ToString();
+            currentValue = Mathf.RoundToInt(start + (target - start) * easeOutQuad.Evaluate(time / maxTime));
+            text.text = currentValue.ToString();
             yield return null;
         }
 
         star.eulerAngles = Vector3.zero;
         text.rectTransform.localScale = Vector3.one;
-        text.text = target.ToString();
+        currentValue = (int) target;
+        text.text = currentValue.ToString();
 
         yield return null;
     }

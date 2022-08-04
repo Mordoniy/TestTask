@@ -15,19 +15,20 @@ public class ViewController : MonoBehaviour
         {
             cards[i].Init(settings.cards[i].type, Functions.GetPointsCard(settings.cards[i].type),
                 settings.cards[i].maxValue);
-            cards[i].onPlay = AddPoints;
+            cards[i].OnPlay = AddPoints;
         }
         points.Init();
     }
 
     void AddPoints(CardType type)
     {
-        if (Functions.GetPointsCard(type) >= settings.cards[(int) type].maxValue)
+        int currentValue = Functions.GetPointsCard(type);
+        if (currentValue >= settings.cards[(int) type].maxValue)
         {
             return;
         }
 
-        Functions.SetPointsCard(type, Functions.GetPointsCard(type) + 1);
+        Functions.SetPointsCard(type, currentValue + 1);
         Functions.SetPoints(Functions.GetPoints() + settings.countAddPoint);
         points.AddPoints(settings.countAddPoint);
     }

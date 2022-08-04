@@ -168,8 +168,8 @@ PlayerSettings:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 11400000, guid: 8739a4c2dd3eac74f9b807473a4baea3, type: 2}
-  - {fileID: -8136655037749924608, guid: 7fb2527e63c4fff4281324bb39da76a3, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
   - {fileID: -3634117448744287838, guid: 4b634467ec9d2d94a80ec444916d3bcf, type: 2}
   - {fileID: 4800000, guid: c9f956787b1d945e7b36e0516201fc76, type: 3}
   metroInputSource: 0
@@ -830,7 +830,8 @@ PlayerSettings:
   platformArchitecture: {}
   scriptingBackend:
     Android: 0
-  il2cppCompilerConfiguration: {}
+  il2cppCompilerConfiguration:
+    Android: 0
   managedStrippingLevel: {}
   incrementalIl2cppBuild: {}
   suppressCommonWarnings: 1

@@ -12,7 +12,7 @@ public enum CardType
 
 public class CardController : MonoBehaviour
 {
-    public System.Action<CardType> onPlay;
+    public System.Action<CardType> OnPlay;
 
     [SerializeField] private TMP_Text currentValue;
     [SerializeField] private TMP_Text maxValue;
@@ -27,7 +27,7 @@ public class CardController : MonoBehaviour
 
     public void Play()
     {
-        onPlay?.Invoke(type);
+        OnPlay?.Invoke(type);
         currentValue.text = Functions.GetPointsCard(type).ToString();
     }
 }

@@ -1,10 +1,8 @@
 using UnityEngine;
 using UnityEngine.XR.ARFoundation;
-using Zenject;
 
 public class TargetTracking : MonoBehaviour
 {
-    [Inject] private ARTrackedImageManager manager;
     [SerializeField] private GameObject prefab;
 
     private GameObject obj;
@@ -29,16 +27,16 @@ public class TargetTracking : MonoBehaviour
         }
     }
 
-    private void UpdateImage(ARTrackedImage trackedImage)
+    private void UpdateImage(Component trackedImage)
     {
         Vector3 position = trackedImage.transform.position;
         if (obj == null)
         {
             obj = Instantiate(prefab, position, Quaternion.identity);
         }
-
-        obj.transform.position = position;
-
-        obj.transform.LookAt(Camera.main.transform);
+        else
+        {
+            obj.transform.position = position;
+        }
     }
 }
